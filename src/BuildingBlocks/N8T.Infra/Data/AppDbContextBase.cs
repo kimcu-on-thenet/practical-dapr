@@ -70,17 +70,16 @@ namespace N8T.Infrastructure.Data
 
         public IEnumerable<IDomainEvent> GetDomainEvents()
         {
-            var domainEntities = ChangeTracker
-                .Entries<EntityBase>()
+            var aggregateRoots = ChangeTracker
+                .Entries<AggregateRoot>()
                 .Where(x =>
                     x.Entity.DomainEvents != null &&
                     x.Entity.DomainEvents.Any())
                 .ToList();
 
-            var domainEvents = domainEntities
-                .SelectMany(x => x.Entity.DomainEvents);
+            var domainEvents = aggregateRoots.SelectMany(x => x.Entity.DomainEvents);
 
-            domainEntities.ForEach(entity => entity.Entity.DomainEvents.Clear());
+            aggregateRoots.ForEach(entity => entity.Entity.DomainEvents.Clear());
 
             return domainEvents;
         }
